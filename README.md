@@ -110,5 +110,10 @@ You can adjust the data refresh interval by modifying the `realtimeInterval` set
 
 **Developer**: Smart Building Monitoring Solution using Rust + Web Technologies
 
+## Author
+Taewook Kang (laputa99999@gmail.com)
+
+
+
 
 
