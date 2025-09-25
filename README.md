@@ -1,6 +1,7 @@
 # Smart Building KPI Dashboard Example Project
 
-A web application for visualizing Smart Building KPI metrics example project developed in Rust. This project show how to use rust for developing wep application.
+A web application for visualizing Smart Building KPI metrics example project developed in [Rust](https://www.rust-lang.org/). This project show how to use rust for developing wep application.
+<img src="https://www.rust-lang.org/static/images/rust-logo-blk.svg"></img>
 
 <p align="center"><img src="https://github.com/mac999/smartbuilding_kpi_sample_server/blob/main/img/img.png" height="300"></img></p>
 
@@ -112,6 +113,7 @@ You can adjust the data refresh interval by modifying the `realtimeInterval` set
 
 ## Author
 Taewook Kang (laputa99999@gmail.com)
+
 
 
 
