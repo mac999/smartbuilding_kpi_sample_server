@@ -1,109 +1,109 @@
-# 🏢 스마트 빌딩 KPI 대시보드
+# Smart Building KPI Dashboard
 
-Rust로 개발된 스마트 빌딩 KPI 지표 시각화 웹 애플리케이션입니다.
+A web application for visualizing Smart Building KPI metrics developed in Rust.
 
-## 🌟 주요 기능
+## Key Features
 
-- **실시간 KPI 모니터링**: 8가지 핵심 스마트 빌딩 지표를 실시간으로 모니터링
-- **다양한 차트 유형**: Line, Bar, Doughnut 차트로 데이터 시각화
-- **반응형 디자인**: 모든 디바이스에서 최적화된 사용자 경험
-- **실시간 모드**: 3초마다 자동 데이터 새로고침
-- **다크모드 UI**: 세련된 다크 테마와 글래스모피즘 디자인
+- **Real-time KPI Monitoring**: Monitor 8 core smart building metrics in real-time
+- **Multiple Chart Types**: Data visualization with Line, Bar, and Doughnut charts
+- **Responsive Design**: Optimized user experience on all devices
+- **Real-time Mode**: Automatic data refresh every 3 seconds
+- **Dark Mode UI**: Sophisticated dark theme with glassmorphism design
 
-## 📊 모니터링 KPI 지표
+## Monitored KPI Metrics
 
-1. **에너지 효율성** (%) - 건물의 에너지 사용 효율성
-2. **온도** (°C) - 실내 온도
-3. **습도** (%) - 실내 습도
-4. **공기질 지수** (AQI) - 실내 공기질 수준
-5. **조명 사용률** (%) - 조명 시스템 사용률
-6. **점유율** (%) - 건물 공간 점유율
-7. **물 소비량** (L) - 물 사용량
-8. **CO2 농도** (ppm) - 이산화탄소 농도
+1. **Energy Efficiency** (%) - Building energy usage efficiency
+2. **Temperature** (°C) - Indoor temperature
+3. **Humidity** (%) - Indoor humidity
+4. **Air Quality Index** (AQI) - Indoor air quality level
+5. **Lighting Usage** (%) - Lighting system usage rate
+6. **Occupancy Rate** (%) - Building space occupancy rate
+7. **Water Consumption** (L) - Water usage
+8. **CO2 Level** (ppm) - Carbon dioxide concentration
 
-## 🚀 실행 방법
+## How to Run
 
-### 자동 실행 (Windows)
+### Automatic Execution (Windows)
 ```batch
 run_dashboard.bat
 ```
 
-### 수동 실행
+### Manual Execution
 ```bash
-# 의존성 설치 및 빌드
+# Install dependencies and build
 cargo build
 
-# 애플리케이션 실행
+# Run application
 cargo run
 ```
 
-서버가 시작되면 브라우저에서 `http://localhost:8080`으로 접속하세요.
+Once the server starts, visit `http://localhost:8080` in your browser.
 
-## 🛠️ 기술 스택
+##  Technology Stack
 
-### 백엔드 (Rust)
-- **actix-web**: 고성능 웹 프레임워크
-- **serde**: JSON 직렬화/역직렬화
-- **rand**: 랜덤 데이터 생성
-- **chrono**: 날짜/시간 처리
+### Backend (Rust)
+- **actix-web**: High-performance web framework
+- **serde**: JSON serialization/deserialization
+- **rand**: Random data generation
+- **chrono**: Date/time handling
 
-### 프론트엔드
-- **Chart.js**: 데이터 시각화
-- **HTML5/CSS3**: 반응형 UI
-- **JavaScript**: 동적 상호작용
+### Frontend
+- **Chart.js**: Data visualization
+- **HTML5/CSS3**: Responsive UI
+- **JavaScript**: Dynamic interactions
 
-## 📁 프로젝트 구조
+##  Project Structure
 
 ```
 rust_hello_world/
 ├── src/
-│   └── main.rs              # 메인 Rust 애플리케이션
+│   └── main.rs              # Main Rust application
 ├── static/
-│   └── index.html           # 웹 대시보드 UI
-├── Cargo.toml               # Rust 의존성 설정
-├── run_dashboard.bat        # Windows 실행 스크립트
-└── README.md                # 프로젝트 문서
+│   └── index.html           # Web dashboard UI
+├── Cargo.toml               # Rust dependency configuration
+├── run_dashboard.bat        # Windows execution script
+└── README.md                # Project documentation
 ```
 
-## 🎨 UI 특징
+##  UI Features
 
-- **다크모드 테마**: 세련되고 전문적인 다크 UI 디자인
-- **그라데이션 배경**: 깊이감 있는 다크 그라데이션 배경
-- **글래스모피즘 효과**: 반투명 카드와 블러 효과
-- **실시간 통계 카드**: 주요 KPI 값을 한눈에 확인
-- **인터랙티브 차트**: 다크모드 최적화된 차트와 애니메이션
-- **반응형 그리드**: 다양한 화면 크기에 최적화된 레이아웃
+- **Dark Mode Theme**: Sophisticated and professional dark UI design
+- **Gradient Background**: Deep dark gradient background with depth
+- **Glassmorphism Effects**: Semi-transparent cards with blur effects
+- **Real-time Statistics Cards**: Key KPI values at a glance
+- **Interactive Charts**: Dark mode optimized charts with animations
+- **Responsive Grid**: Layout optimized for various screen sizes
 
-## 🔧 커스터마이징
+## Customization
 
-### 새로운 KPI 추가
-1. `src/main.rs`의 `SmartBuildingKPI` 구조체에 필드 추가
-2. `generate_random_kpi_data()` 함수에서 랜덤 값 생성 로직 추가
-3. `static/index.html`에서 차트 설정 업데이트
+### Adding New KPIs
+1. Add fields to the `SmartBuildingKPI` struct in `src/main.rs`
+2. Add random value generation logic in the `generate_random_kpi_data()` function
+3. Update chart configuration in `static/index.html`
 
-### 데이터 수집 주기 변경
-`static/index.html`의 `realtimeInterval` 설정을 수정하여 데이터 새로고침 주기를 조절할 수 있습니다.
+### Changing Data Collection Interval
+You can adjust the data refresh interval by modifying the `realtimeInterval` setting in `static/index.html`.
 
-## 📈 API 엔드포인트
+## API Endpoints
 
-- `GET /`: 메인 대시보드 페이지
-- `GET /api/kpi-data`: JSON 형식의 KPI 데이터
+- `GET /`: Main dashboard page
+- `GET /api/kpi-data`: KPI data in JSON format
 
-## 🔄 실시간 기능
+## Real-time Features
 
-- 실시간 모드 활성화 시 3초마다 새로운 데이터 자동 로드
-- 각 차트가 부드럽게 애니메이션과 함께 업데이트
-- 통계 카드도 실시간으로 최신 값 표시
+- Automatic loading of new data every 3 seconds when real-time mode is activated
+- Smooth chart updates with animations
+- Real-time display of latest values in statistics cards
 
-## 💡 향후 개선 사항
+## Future Improvements
 
-- 실제 IoT 센서 데이터 연동
-- 데이터베이스 연결 (PostgreSQL, MongoDB 등)
-- 사용자 인증 및 권한 관리
-- 알람 및 임계값 설정 기능
-- 데이터 내보내기 기능 (CSV, Excel)
-- 모바일 앱 개발
+- Integration with real IoT sensor data
+- Database connection (PostgreSQL, MongoDB, etc.)
+- User authentication and authorization
+- Alarm and threshold setting features
+- Data export functionality (CSV, Excel)
+- Mobile app development
 
 ---
 
-**개발자**: Rust + Web 기술을 활용한 스마트 빌딩 모니터링 솔루션
+**Developer**: Smart Building Monitoring Solution using Rust + Web Technologies
