@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏢 Smart Building KPI Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.1/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: rgba(59, 130, 246, 0.3);
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            background: rgba(59, 130, 246, 0.5);
+            border-color: rgba(59, 130, 246, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(580px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .visible {
+            display: block !important;
+        }
+
+        .grid-visible {
+            display: grid !important;
+        }
+
+        .chart-container {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+            height: 400px; /* 고정 높이 설정 */
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .chart-title {
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .chart-canvas {
+            height: 300px !important;
+            max-height: 300px;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            margin: 50px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>Smart Building KPI Dashboard</h1>
+            <p>Real-time Smart Building Performance Indicators Monitoring System</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="refreshData()">Refresh Data</button>
+            <button class="btn" onclick="toggleRealtime()">Real-time Mode</button>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            Loading data...
+        </div>
+
+        <div id="statsGrid" class="stats-grid hidden"></div>
+
+        <div id="chartsContainer" class="charts-grid hidden">
+            <div class="chart-container">
+                <div class="chart-title">🌡️ Environmental Metrics (Temperature & Humidity)</div>
+                <canvas id="environmentChart" class="chart-canvas"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">⚡ Energy Efficiency & Lighting Usage</div>
+                <canvas id="energyChart" class="chart-canvas"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">🌬️ Air Quality Metrics (AQI & CO2)</div>
+                <canvas id="airQualityChart" class="chart-canvas"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">👥 Occupancy & Water Consumption</div>
+                <canvas id="utilizationChart" class="chart-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let charts = {};
+        let realtimeMode = false;
+        let realtimeInterval;
+
+        // Initialize charts
+        function initializeCharts() {
+            // Environmental metrics chart
+            charts.environment = new Chart(document.getElementById('environmentChart'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: [],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Humidity (%)',
+                        data: [],
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(203, 213, 225, 0.1)' }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Temperature (°C)', color: '#cbd5e1' },
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(203, 213, 225, 0.1)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Humidity (%)', color: '#cbd5e1' },
+                            ticks: { color: '#cbd5e1' },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+
+            // Energy chart
+            charts.energy = new Chart(document.getElementById('energyChart'), {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Energy Efficiency (%)',
+                        data: [],
+                        backgroundColor: '#3b82f6',
+                        borderColor: '#2563eb',
+                        borderWidth: 2
+                    }, {
+                        label: 'Lighting Usage (%)',
+                        data: [],
+                        backgroundColor: '#f59e0b',
+                        borderColor: '#d97706',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(203, 213, 225, 0.1)' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Percentage (%)', color: '#cbd5e1' },
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(203, 213, 225, 0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // Air quality chart
+            charts.airQuality = new Chart(document.getElementById('airQualityChart'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Air Quality Index (AQI)',
+                        data: [],
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'CO2 Level (ppm)',
+                        data: [],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(203, 213, 225, 0.1)' }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'AQI', color: '#cbd5e1' },
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(203, 213, 225, 0.1)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'CO2 (ppm)', color: '#cbd5e1' },
+                            ticks: { color: '#cbd5e1' },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+
+            // Utilization chart
+            charts.utilization = new Chart(document.getElementById('utilizationChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Occupancy Rate (%)', 'Water Consumption (L)'],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: ['#10b981', '#3b82f6'],
+                        borderColor: ['#059669', '#2563eb'],
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update statistics cards
+        function updateStats(data) {
+            const latest = data[data.length - 1];
+            const statsGrid = document.getElementById('statsGrid');
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${latest.energy_efficiency.toFixed(1)}%</div>
+                    <div class="stat-label">Energy Efficiency</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${latest.temperature.toFixed(1)}°C</div>
+                    <div class="stat-label">Current Temperature</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${latest.air_quality.toFixed(0)}</div>
+                    <div class="stat-label">Air Quality Index</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${latest.occupancy_rate.toFixed(1)}%</div>
+                    <div class="stat-label">Occupancy Rate</div>
+                </div>
+            `;
+        }
+
+        // Update chart data
+        function updateCharts(data) {
+            const labels = data.map(item => new Date(item.timestamp).toLocaleTimeString());
+            
+            // Environmental metrics
+            charts.environment.data.labels = labels;
+            charts.environment.data.datasets[0].data = data.map(item => item.temperature);
+            charts.environment.data.datasets[1].data = data.map(item => item.humidity);
+            charts.environment.update();
+
+            // Energy metrics
+            charts.energy.data.labels = labels;
+            charts.energy.data.datasets[0].data = data.map(item => item.energy_efficiency);
+            charts.energy.data.datasets[1].data = data.map(item => item.lighting_usage);
+            charts.energy.update();
+
+            // Air quality metrics
+            charts.airQuality.data.labels = labels;
+            charts.airQuality.data.datasets[0].data = data.map(item => item.air_quality);
+            charts.airQuality.data.datasets[1].data = data.map(item => item.co2_level);
+            charts.airQuality.update();
+
+            // Utilization metrics (latest data only)
+            const latest = data[data.length - 1];
+            charts.utilization.data.datasets[0].data = [latest.occupancy_rate, latest.water_consumption / 5]; // Scale adjustment
+            charts.utilization.update();
+        }
+
+        // Load data
+        async function loadData() {
+            try {
+                const response = await fetch('/api/kpi-data');
+                const result = await response.json();
+                
+                updateStats(result.data);
+                updateCharts(result.data);
+                
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('statsGrid').classList.remove('hidden');
+                document.getElementById('statsGrid').classList.add('grid-visible');
+                document.getElementById('chartsContainer').classList.remove('hidden');
+                document.getElementById('chartsContainer').classList.add('grid-visible');
+            } catch (error) {
+                console.error('Data loading error:', error);
+                alert('Failed to load data.');
+            }
+        }
+
+        // Refresh data
+        function refreshData() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('statsGrid').classList.add('hidden');
+            document.getElementById('chartsContainer').classList.add('hidden');
+            loadData();
+        }
+
+        // Toggle real-time mode
+        function toggleRealtime() {
+            realtimeMode = !realtimeMode;
+            const btn = event.target;
+            
+            if (realtimeMode) {
+                btn.textContent = '⏹️ Stop Real-time Mode';
+                btn.style.background = 'rgba(239, 68, 68, 0.5)';
+                realtimeInterval = setInterval(loadData, 3000); // Update every 3 seconds
+            } else {
+                btn.textContent = '⚡ Real-time Mode';
+                btn.style.background = 'rgba(59, 130, 246, 0.3)';
+                clearInterval(realtimeInterval);
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initializeCharts();
+            loadData();
+        });
+    </script>
+</body>
+</html>
