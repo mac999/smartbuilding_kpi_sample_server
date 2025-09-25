@@ -2,6 +2,8 @@
 
 A web application for visualizing Smart Building KPI metrics developed in Rust.
 
+<p align="center"><img src="https://github.com/mac999/smartbuilding_kpi_sample_server/blob/main/img/img.png"></img></p>
+
 ## Key Features
 
 - **Real-time KPI Monitoring**: Monitor 8 core smart building metrics in real-time
@@ -107,3 +109,4 @@ You can adjust the data refresh interval by modifying the `realtimeInterval` set
 ---
 
 **Developer**: Smart Building Monitoring Solution using Rust + Web Technologies
+
